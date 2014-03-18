@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-FarkleServer::Application.config.secret_key_base = '57040a92b95f90bcc592896dd78db5f2170aa9ada34e4f6dbc01849148aac46a50a996d210d42e7c904de80368cafe68408f2da24afc4241bf9bf8792bc20569'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+FarkleServer::Application.config.secret_key_base = secure_token
